@@ -1,45 +1,45 @@
-
 var React = window.React = require('react'),
     ReactDOM = require("react-dom"),
     Timer = require("./ui/Timer"),
+    Footer = require("./ui/Footer"),
+    Content = require("./ui/Content"),
+    Navigation = require("./ui/Navigation"),
     mountNode = document.getElementById("app");
 
-var TodoList = React.createClass({
-  render: function() {
-    var createItem = function(itemText) {
-      return <li>{itemText}</li>;
-    };
-    return <ul>{this.props.items.map(createItem)}</ul>;
-  }
-});
-var TodoApp = React.createClass({
-  getInitialState: function() {
-    return {items: [], text: ''};
-  },
-  onChange: function(e) {
-    this.setState({text: e.target.value});
-  },
-  handleSubmit: function(e) {
-    e.preventDefault();
-    var nextItems = this.state.items.concat([this.state.text]);
-    var nextText = '';
-    this.setState({items: nextItems, text: nextText});
-  },
-  render: function() {
-    return (
-      <div>
-        <h3>TODO</h3>
-        <TodoList items={this.state.items} />
-        <form onSubmit={this.handleSubmit}>
-          <input onChange={this.onChange} value={this.state.text} />
-          <button>{'Add #' + (this.state.items.length + 1)}</button>
-        </form>
-        <Timer />
-      </div>
-    );
-  }
+var activeComponent = require("react-router-active-component");
+var Route = require("react-router/lib/Route");
+var Router = require("react-router/lib/Router");
+var IndexRoute = require("react-router/lib/IndexRoute");
+var hashHistory = require("react-router/lib/hashHistory");
+
+let NavItem = activeComponent('li');
+let ActivePara = activeComponent('p', {link: false});
+
+let App = React.createClass({
+    render() {
+        return <div>
+            <Navigation/>
+            <div className="container">
+                {this.props.children}
+                <Footer/>
+            </div>
+        </div>
+    }
 });
 
+let Services = React.createClass({
+   render() {
+       return <div>
+           Hello services tab it is
+       </div>
+   }
+});
 
-ReactDOM.render(<TodoApp />, mountNode);
+ReactDOM.render(<Router history={hashHistory}>
+        <Route path="/" component={App}>
+            <IndexRoute component={Content}/>
+            <Route path="services" component={Services} />
+        </Route>
+    </Router>,
+    mountNode);
 
